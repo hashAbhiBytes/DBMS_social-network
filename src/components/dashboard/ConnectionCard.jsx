@@ -1,62 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+"use client"
+import { Link } from "react-router-dom"
+import Card from "../common/Card"
+import Button from "../common/Button"
 
-const ConnectionCard = ({ connection }) => {
-  // Calculate common interests to display
-  const commonInterests = connection.commonInterests || [];
-  
+const ConnectionCard = ({ connection, onConnect, onIgnore }) => {
+  const { id, name, avatar, title, mutualConnections, isConnected } = connection
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
-      <Link to={`/profile/${connection.id}`} className="block">
-        <div className="p-4">
-          <div className="flex items-center mb-3">
-            <img 
-              src={connection.profilePhoto || '/assets/images/default-avatar.png'} 
-              alt={connection.fullName} 
-              className="w-12 h-12 rounded-full object-cover mr-3"
-            />
-            <div>
-              <h3 className="font-semibold text-gray-900">{connection.fullName}</h3>
-              <p className="text-sm text-gray-600">{connection.profession || connection.location}</p>
-            </div>
-          </div>
-          
-          <div className="mt-2">
-            <p className="text-xs text-gray-500 mb-1">Common interests</p>
-            <div className="flex flex-wrap gap-1">
-              {commonInterests.slice(0, 3).map((interest, index) => (
-                <span 
-                  key={index} 
-                  className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full"
-                >
-                  {interest}
-                </span>
-              ))}
-              {commonInterests.length > 3 && (
-                <span className="text-xs text-blue-600">+{commonInterests.length - 3} more</span>
-              )}
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex border-t border-gray-200">
-          <Link 
-            to={`/profile/${connection.id}`}
-            className="flex-1 py-2 text-center text-sm font-medium text-blue-600 hover:bg-blue-50"
-          >
-            View Profile
-          </Link>
-          <Link 
-            to={`/messages/${connection.conversationId || ''}`}
-            className="flex-1 py-2 text-center text-sm font-medium text-green-600 hover:bg-green-50 border-l border-gray-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Message
-          </Link>
-        </div>
-      </Link>
-    </div>
-  );
-};
+    <Card className="h-full flex flex-col">
+      <div className="flex items-start">
+        <Link to={`/profile/${id}`} className="flex-shrink-0">
+          <img
+            src={avatar || "/src/assets/images/default-avatar.png"}
+            alt={name}
+            className="w-12 h-12 rounded-full object-cover"
+          />
+        </Link>
 
-export default ConnectionCard;
+        <div className="ml-3 flex-1">
+          <Link to={`/profile/${id}`} className="font-medium text-blue-600 hover:underline">
+            {name}
+          </Link>
+
+          {title && <p className="text-sm text-gray-600">{title}</p>}
+
+          {mutualConnections > 0 && (
+            <p className="text-xs text-gray-500 mt-1">
+              {mutualConnections} mutual connection{mutualConnections !== 1 ? "s" : ""}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4 flex space-x-2">
+        {isConnected ? (
+          <Button variant="outline" size="small" fullWidth disabled>
+            Connected
+          </Button>
+        ) : (
+          <>
+            <Button variant="primary" size="small" onClick={() => onConnect(id)}>
+              Connect
+            </Button>
+
+            <Button variant="outline" size="small" onClick={() => onIgnore(id)}>
+              Ignore
+            </Button>
+          </>
+        )}
+      </div>
+    </Card>
+  )
+}
+
+export default ConnectionCard
